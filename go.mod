@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	github.com/XSAM/otelsql v0.44.0
-	github.com/eclipse-cfm/cfm v0.0.10
+	github.com/eclipse-cfm/cfm v0.1.0
 	github.com/go-chi/chi/v5 v5.5.0
 	github.com/go-playground/validator/v10 v10.30.6
 	github.com/google/uuid v1.6.0

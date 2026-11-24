@@ -40,8 +40,8 @@ github.com/docker/go-units v0.5.0 h1:69rxXcBk27SvSaaxTtLh/8llcHD8vYHT7WSdRZ/jvr4
 github.com/docker/go-units v0.5.0/go.mod h1:fgPhTUdO+D/Jk86RDLlptpiXQzgHJF7gydDDbaIK4Dk=
 github.com/ebitengine/purego v0.10.1 h1:dewVBCBT2GaMu1SrNTYxQhgQBethzfhiwvZiLGP/qyY=
 github.com/ebitengine/purego v0.10.1/go.mod h1:iIjxzd6CiRiOG0UyXP+V1+jWqUXVjPKLAI0mRfJZTmQ=
-github.com/eclipse-cfm/cfm v0.0.10 h1:vt8H6PDc9P9uZpxnA6dIA+C3Psp875sKU1JHGY1XdzM=
-github.com/eclipse-cfm/cfm v0.0.10/go.mod h1:Qr3qOdZyXHTDcRoWxyyU9efsT99SBADkpzdc1jRDX7s=
+github.com/eclipse-cfm/cfm v0.1.0 h1:AbQJ5B6NMlx9DOCb9VOetu62mWDNE3rwdK4x/Pcsuso=
+github.com/eclipse-cfm/cfm v0.1.0/go.mod h1:iT27sxGSQPyDivIiScsX1SAFeNsUwAw/Y+zahIUIz8A=
 github.com/fatih/color v1.16.0 h1:zmkK9Ngbjj+K0yRhTVONQh1p/HknKYSlNT+vZCzyokM=
 github.com/fatih/color v1.16.0/go.mod h1:fL2Sau1YI5c0pdGEVCbKQbLXB6edEj1ZgiY4NijnWvE=
 github.com/felixge/httpsnoop v1.1.0 h1:3YtUj32ZZkqZtt3sZZsClsymw/QDuVfpNhoA31zeORc=
