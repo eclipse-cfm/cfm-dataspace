@@ -1,0 +1,282 @@
+.PHONY: help build test lint clean docker-build docker-clean install-tools generate-mocks install-mockery
+
+#==============================================================================
+# CFM Dataspace components - Delegates to Individual Makefiles
+#==============================================================================
+
+# Service directories
+TMANAGER_DIR=tmanager
+EDCV_DIR=agent/orchestration/edcv
+IH_DIR=agent/orchestration/ih
+REG_DIR=agent/orchestration/registration
+ONBOARDING_DIR=agent/orchestration/onboarding
+JWTLET_AGENT_DIR=agent/orchestration/jwtletagent
+SIGLET_AGENT_DIR=agent/orchestration/siglet
+KEY_MANAGEMENT_AGENT_DIR=agent/lifecycle/keymanagementagent
+AGENT_COMMON=agent/common
+DATASPACE_DIR=dataspace
+KIND_CLUSTER_NAME=edcv
+
+E2E_DIR=e2e
+
+# Docker settings
+DOCKER_REGISTRY=ghcr.io/eclipse-cfm/cfm-dataspace/
+DOCKER_TAG=latest
+
+# TEST OUTPUT CONFIG
+TEST_FORMAT=dots-v2
+export TEST_CMD=gotestsum --format $(TEST_FORMAT) -- -count=1 ./...
+
+#==============================================================================
+# Help
+#==============================================================================
+
+help:
+	@echo "CFM Dataspace Make Commands:"
+	@echo ""
+	@echo "Build Commands:"
+	@echo "  build          - Build all services"
+	@echo "  build-tmanager - Build tmanager service"
+	@echo "  build-all      - Build all services for all platforms"
+	@echo ""
+	@echo "Test Commands:"
+	@echo "  test           - Run tests for all services"
+	@echo "  test-tmanager  - Test tmanager service"
+	@echo "  lint           - Run golangci-lint on all modules"
+	@echo ""
+	@echo "Development Commands:"
+	@echo "  dev-tmanager   - Run tmanager in development mode"
+	@echo "  clean          - Clean all build artifacts"
+	@echo ""
+	@echo "Docker Commands:"
+	@echo "  docker-build   - Build all Docker images"
+	@echo "  docker-clean   - Remove all Docker images"
+	@echo ""
+	@echo "Tool Commands:"
+	@echo "  install-tools  - Install development tools for all services"
+	@echo "  generate-mocks - Generate mocks for all services"
+
+#==============================================================================
+# Build Commands - Delegate to Service Makefiles
+#==============================================================================
+
+build:
+	@echo "Building all modules..."
+	$(MAKE) -C $(TMANAGER_DIR) build
+	$(MAKE) -C $(EDCV_DIR) build
+	$(MAKE) -C $(IH_DIR) build
+	$(MAKE) -C $(REG_DIR) build
+	$(MAKE) -C $(ONBOARDING_DIR) build
+	$(MAKE) -C $(JWTLET_AGENT_DIR) build
+	$(MAKE) -C $(SIGLET_AGENT_DIR) build
+	$(MAKE) -C $(KEY_MANAGEMENT_AGENT_DIR) build
+
+build-tmanager:
+	@echo "Building tmanager..."
+	$(MAKE) -C $(TMANAGER_DIR) build
+
+build-all:
+	@echo "Building all modules for all platforms..."
+	$(MAKE) -C $(TMANAGER_DIR) build-all
+	$(MAKE) -C $(EDCV_DIR) build-all
+	$(MAKE) -C $(IH_DIR) build-all
+	$(MAKE) -C $(REG_DIR) build-all
+	$(MAKE) -C $(ONBOARDING_DIR) build-all
+	$(MAKE) -C $(JWTLET_AGENT_DIR) build-all
+	$(MAKE) -C $(SIGLET_AGENT_DIR) build-all
+	$(MAKE) -C $(KEY_MANAGEMENT_AGENT_DIR) build-all
+
+#==============================================================================
+# Test Commands - Delegate to Service Makefiles
+#==============================================================================
+
+test: install-gotestsum
+	@echo "Testing all services..."
+	$(MAKE) -C $(TMANAGER_DIR) test
+	$(MAKE) -C $(EDCV_DIR) test
+	$(MAKE) -C $(JWTLET_AGENT_DIR) test
+	$(MAKE) -C $(IH_DIR) test
+	$(MAKE) -C $(E2E_DIR) test
+	$(MAKE) -C $(REG_DIR) test
+	$(MAKE) -C $(ONBOARDING_DIR) test
+	$(MAKE) -C $(JWTLET_AGENT_DIR) test
+	$(MAKE) -C $(SIGLET_AGENT_DIR) test
+	$(MAKE) -C $(KEY_MANAGEMENT_AGENT_DIR) test
+	$(MAKE) -C $(AGENT_COMMON) test
+	$(MAKE) -C $(DATASPACE_DIR) test
+
+lint: install-golangci-lint
+	@echo "Linting all modules..."
+	golangci-lint run ./...
+
+test-tmanager:
+	@echo "Testing tmanager..."
+	$(MAKE) -C $(TMANAGER_DIR) test
+
+test-edcv:
+	@echo "Testing EDC-V agent..."
+	$(MAKE) -C $(EDCV_DIR) test
+
+test-reg:
+	@echo "Testing Registration agent..."
+	$(MAKE) -C $(REG_DIR) test
+
+test-onboarding:
+	@echo "Testing Onboarding agent..."
+	$(MAKE) -C $(ONBOARDING_DIR) test
+
+test-agent-common:
+	@echo "Testing agent common..."
+	$(MAKE) -C $(AGENT_COMMON) test
+
+#==============================================================================
+# Development Commands - Delegate to Service Makefiles
+#==============================================================================
+
+dev-tmanager:
+	@echo "Starting tmanager in development mode..."
+	$(MAKE) -C $(TMANAGER_DIR) dev-server
+
+clean:
+	@echo "Cleaning all services..."
+	$(MAKE) -C $(TMANAGER_DIR) clean
+	$(MAKE) -C $(EDCV_DIR) clean
+	$(MAKE) -C $(IH_DIR) clean
+	$(MAKE) -C $(REG_DIR) clean
+	$(MAKE) -C $(ONBOARDING_DIR) clean
+	$(MAKE) -C $(JWTLET_AGENT_DIR) clean
+	$(MAKE) -C $(SIGLET_AGENT_DIR) clean
+	$(MAKE) -C $(KEY_MANAGEMENT_AGENT_DIR) clean
+
+#==============================================================================
+# Tool Commands - Delegate to Service Makefiles
+#==============================================================================
+
+install-mockery:
+	go install github.com/vektra/mockery/v2@v2.53.7
+
+install-golangci-lint:
+	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.15.0
+
+install-gotestsum:
+	go install gotest.tools/gotestsum@latest
+
+install-tools: install-mockery install-gotestsum
+	@echo "Installing tools for all services..."
+	$(MAKE) -C $(TMANAGER_DIR) install-tools
+
+generate-mocks: install-mockery
+	@echo "No generated mocks in this repository"
+
+
+generate-docs:
+	$(MAKE) -C $(TMANAGER_DIR) generate-docs
+
+#==============================================================================
+# Docker Commands - Handled at Top Level
+#==============================================================================
+
+docker-build: docker-build-tmanager docker-build-jwtletagent docker-build-edcvagent docker-build-ihagent docker-build-regagent docker-build-obagent docker-build-keymanagementagent docker-build-sigletagent
+
+docker-build-tmanager:
+	@echo "Building tmanager Docker image..."
+	docker buildx build -f docker/Dockerfile.tmanager.dockerfile -t $(DOCKER_REGISTRY)tmanager:$(DOCKER_TAG) .
+
+docker-build-jwtletagent:
+	@echo "Building test agent Docker image..."
+	docker buildx build -f docker/Dockerfile.jwtletagent.dockerfile -t $(DOCKER_REGISTRY)jwtletagent:$(DOCKER_TAG) .
+
+docker-build-edcvagent:
+	@echo "Building EDC-V agent Docker image..."
+	docker buildx build -f docker/Dockerfile.edcvagent.dockerfile -t $(DOCKER_REGISTRY)edcvagent:$(DOCKER_TAG) .
+
+docker-build-ihagent:
+	@echo "Building IdentityHub agent Docker image..."
+	docker buildx build -f docker/Dockerfile.ihagent.dockerfile -t $(DOCKER_REGISTRY)ihagent:$(DOCKER_TAG) .
+
+docker-build-regagent:
+	@echo "Building Registration agent Docker image..."
+	docker buildx build -f docker/Dockerfile.regagent.dockerfile -t $(DOCKER_REGISTRY)regagent:$(DOCKER_TAG) .
+
+docker-build-obagent:
+	@echo "Building Onboarding agent Docker image..."
+	docker buildx build -f docker/Dockerfile.obagent.dockerfile -t $(DOCKER_REGISTRY)obagent:$(DOCKER_TAG) .
+
+docker-build-keymanagementagent:
+	@echo "Building Key Management agent Docker image..."
+	docker buildx build -f docker/Dockerfile.keymanagementagent.dockerfile -t $(DOCKER_REGISTRY)keymanagementagent:$(DOCKER_TAG) .
+
+docker-build-sigletagent:
+	@echo "Building Siglet agent Docker image..."
+	docker buildx build -f docker/Dockerfile.sigletagent.dockerfile -t $(DOCKER_REGISTRY)sigletagent:$(DOCKER_TAG) .
+
+docker-clean: docker-clean-tmanager docker-clean-jwtletagent docker-clean-edcvagent docker-clean-ihagent docker-clean-regagent docker-clean-obagent docker-clean-keymanagementagent docker-clean-sigletagent
+
+docker-clean-tmanager:
+	docker rmi $(DOCKER_REGISTRY)tmanager:$(DOCKER_TAG) || true
+
+docker-clean-jwtletagent:
+	docker rmi $(DOCKER_REGISTRY)jwtletagent:$(DOCKER_TAG) || true
+
+docker-clean-edcvagent:
+	docker rmi $(DOCKER_REGISTRY)edcvagent:$(DOCKER_TAG) || true
+
+docker-clean-ihagent:
+	docker rmi $(DOCKER_REGISTRY)ihagent:$(DOCKER_TAG) || true
+
+docker-clean-regagent:
+	docker rmi $(DOCKER_REGISTRY)regagent:$(DOCKER_TAG) || true
+
+docker-clean-obagent:
+	docker rmi $(DOCKER_REGISTRY)obagent:$(DOCKER_TAG) || true
+
+docker-clean-keymanagementagent:
+	docker rmi $(DOCKER_REGISTRY)keymanagementagent:$(DOCKER_TAG) || true
+
+docker-clean-sigletagent:
+	docker rmi $(DOCKER_REGISTRY)sigletagent:$(DOCKER_TAG) || true
+
+#==============================================================================
+# Load images into KinD Cluster
+#==============================================================================
+
+load-into-kind-tmanager: docker-build-tmanager
+	kind load docker-image -n $(KIND_CLUSTER_NAME) $(DOCKER_REGISTRY)tmanager:$(DOCKER_TAG)
+
+load-into-kind-edcvagent: docker-build-edcvagent
+	kind load docker-image -n $(KIND_CLUSTER_NAME) $(DOCKER_REGISTRY)edcvagent:$(DOCKER_TAG)
+
+load-into-kind-ihagent: docker-build-ihagent
+	kind load docker-image -n $(KIND_CLUSTER_NAME) $(DOCKER_REGISTRY)ihagent:$(DOCKER_TAG)
+
+load-into-kind-obagent: docker-build-obagent
+	kind load docker-image -n $(KIND_CLUSTER_NAME) $(DOCKER_REGISTRY)obagent:$(DOCKER_TAG)
+
+load-into-kind-regagent: docker-build-regagent
+	kind load docker-image -n $(KIND_CLUSTER_NAME) $(DOCKER_REGISTRY)regagent:$(DOCKER_TAG)
+
+load-into-kind-jwtletagent: docker-build-jwtletagent
+	kind load docker-image -n $(KIND_CLUSTER_NAME) $(DOCKER_REGISTRY)jwtletagent:$(DOCKER_TAG)
+
+load-into-kind-keymanagementagent: docker-build-keymanagementagent
+	kind load docker-image -n $(KIND_CLUSTER_NAME) $(DOCKER_REGISTRY)keymanagementagent:$(DOCKER_TAG)
+
+load-into-kind-sigletagent: docker-build-sigletagent
+	kind load docker-image -n $(KIND_CLUSTER_NAME) $(DOCKER_REGISTRY)sigletagent:$(DOCKER_TAG)
+
+# builds and loads all images into KinD cluster. Will require kind to be installed and a kind cluster named KIND_CLUSTER_NAME running.
+load-into-kind: docker-build
+	kind load docker-image -n $(KIND_CLUSTER_NAME) $$(docker images --format "{{.Repository}}:{{.Tag}}" | grep '^$(DOCKER_REGISTRY).*:$(DOCKER_TAG)')
+
+#==============================================================================
+# Combined Commands
+#==============================================================================
+
+all: build docker-build
+	@echo "Built all services and Docker images"
+
+deploy: build-all docker-build
+	@echo "Built all services for all platforms and Docker images"
+
+dev-setup: install-tools generate-mocks build
+	@echo "Development environment ready for all services"

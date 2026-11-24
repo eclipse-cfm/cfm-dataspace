@@ -1,0 +1,32 @@
+version: "2"
+
+linters:
+  default: none
+  enable:
+    - depguard
+  settings:
+    depguard:
+      rules:
+        agents-are-independent-of-tmanager:
+          list-mode: lax
+          files:
+            - "**/agent/**"
+          deny:
+            - pkg: github.com/eclipse-cfm/cfm-dataspace/tmanager
+              desc: agents talk to the Tenant Manager only through the Provision Manager, never by importing it
+        tmanager-is-independent-of-agents:
+          list-mode: lax
+          files:
+            - "**/tmanager/**"
+          deny:
+            - pkg: github.com/eclipse-cfm/cfm-dataspace/agent
+              desc: the Tenant Manager must not depend on agent implementations
+        dataspace-model-is-a-leaf:
+          list-mode: lax
+          files:
+            - "**/dataspace/**"
+          deny:
+            - pkg: github.com/eclipse-cfm/cfm-dataspace/tmanager
+              desc: the dataspace model is shared by the Tenant Manager and the agents and must not depend on either
+            - pkg: github.com/eclipse-cfm/cfm-dataspace/agent
+              desc: the dataspace model is shared by the Tenant Manager and the agents and must not depend on either
