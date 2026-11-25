@@ -1,3 +1,9 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./docs/logo/cfm-dataspace-logo-reversed.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./docs/logo/cfm-dataspace-logo.svg">
+  <img alt="CFM Dataspace logo" src="./docs/logo/cfm-dataspace-logo.svg" width="200">
+</picture>
+
 # cfm-dataspace
 
 The CFM Dataspace repo contains dataspace-specific resources, such as the Tenant Manager and specific agent
