@@ -1,7 +1,13 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./docs/logo/cfm-dataspace-logo-reversed.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./docs/logo/cfm-dataspace-logo.svg">
+  <img alt="CFM Dataspace logo" src="./docs/logo/cfm-dataspace-logo.svg" width="200">
+</picture>
+
 # cfm-dataspace
 
 The CFM Dataspace repo contains dataspace-specific resources, such as the Tenant Manager and specific agent
-implementations for the Connector Fabric Manager.
+implementations for the Component Fabric Manager.
 
 These components were moved here from [eclipse-cfm/cfm](https://github.com/eclipse-cfm/cfm) after its
 `v0.0.10` release. They build on the generic engine (Provision Manager, `common`, `assembly`) published as the Go
